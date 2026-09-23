@@ -149,9 +149,8 @@
   .legal .right{margin-left:auto}
   @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
   /* selector de idioma */
-  .lang{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;overflow:hidden;flex-shrink:0}
-  .lang button{appearance:none;border:0;background:transparent;font-family:inherit;font-size:13px;font-weight:700;letter-spacing:.04em;color:var(--muted);padding:7px 12px;cursor:pointer}
-  .lang button[aria-pressed="true"]{background:var(--navy);color:#fff}
+  .lang{appearance:none;border:0;background:transparent;font-family:inherit;font-size:14px;font-weight:700;letter-spacing:.06em;color:var(--muted);padding:4px 2px;cursor:pointer;flex-shrink:0}
+  .lang:hover{color:var(--navy)}
 </style>
 </head>
 <body>
@@ -170,10 +169,7 @@
       <a href="#capacidades" data-en="About us">Nosotros</a>
       <a href="#servicios" class="hide-sm" data-en="Services">Servicios</a>
       <a href="#contacto" class="btn btn-green" data-en="Contact">Contacto</a>
-      <span class="lang" role="group" aria-label="Idioma">
-        <button type="button" data-lang="es" aria-pressed="true">ES</button>
-        <button type="button" data-lang="en" aria-pressed="false">EN</button>
-      </span>
+      <button type="button" class="lang" lang="en">EN</button>
     </nav>
   </div>
 </header>
@@ -387,19 +383,22 @@
     var nodes = [].slice.call(document.querySelectorAll('[data-en]'));
     nodes.forEach(function (n) { n.dataset.es = n.innerHTML; });
     var desc = document.querySelector('meta[name="description"]');
-    var buttons = [].slice.call(document.querySelectorAll('.lang button'));
+    var toggle = document.querySelector('.lang');
 
     function apply(lang) {
       nodes.forEach(function (n) { n.innerHTML = lang === 'en' ? n.dataset.en : n.dataset.es; });
       document.documentElement.lang = lang;
       document.title = META[lang].title;
       if (desc) desc.setAttribute('content', META[lang].desc);
-      buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.lang === lang)); });
+      // El botón anuncia el idioma al que se cambia, no el actual.
+      toggle.textContent = lang === 'en' ? 'ES' : 'EN';
+      toggle.lang = lang === 'en' ? 'es' : 'en';
+      toggle.setAttribute('aria-label', lang === 'en' ? 'Ver en español' : 'View in English');
       try { localStorage.setItem('ludeku-lang', lang); } catch (e) { /* sin almacenamiento */ }
     }
 
-    buttons.forEach(function (b) {
-      b.addEventListener('click', function () { apply(b.dataset.lang); });
+    toggle.addEventListener('click', function () {
+      apply(document.documentElement.lang === 'en' ? 'es' : 'en');
     });
 
     var saved;
